@@ -25,7 +25,7 @@ class Personnage {
     private $_degat;
     private $_locate;
     private $_degat_magique;
-    private $_inventory;
+    private $_defense;
     private $_gold;
 
     public function __construct(array $donnees) {
@@ -104,12 +104,13 @@ class Personnage {
     public function locate() {
         return $this->_locate;
     }
-    public function inventory(){
-        return $this->_inventory;
-    }
 
     public function gold(){
         return $this->_gold;
+    }
+    
+    public function defense(){
+        return $this->_defense;
     }
     public function setId($id) {
         $id = (int) $id;
@@ -193,14 +194,14 @@ class Personnage {
         $this->_locate = $locate;
     }
     
-    public function setInventory($inventory){
-        $this->_inventory = $inventory;
-    }
     
     public function setGold($gold){
         $this->_gold = $gold;
     }
     
+    public function setDefense($def){
+        $this->_defense = $def;
+    }
     
 
     public function nomValide(){

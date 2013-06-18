@@ -43,6 +43,7 @@ class Home_Model_DbTable_Classe extends Zend_Db_Table_Abstract {
         $str = $perso->str()+$classe['str'];
         $vit = $perso->vit()+$classe['vit'];
         $dex = $perso->dex()+$classe['dex'];
+        $def = $perso->defense()+$classe['vit'];
         $degat_magique = $perso->degat_magique() + 3 * (int) $int;
         $life_max = 100+ (8 * (int) $vit);
         if($perso->life()+(8* (int)$classe['vit'])>=$life_max){
@@ -58,6 +59,7 @@ class Home_Model_DbTable_Classe extends Zend_Db_Table_Abstract {
         $perso->setLife($life);
         $perso->setStr($str);
         $perso->setVit($vit);
+        $perso->setDefense($def);
         $perso->setDegat_magique($degat_magique);
         
     }

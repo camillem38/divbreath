@@ -31,40 +31,42 @@ class Home_Model_DbTable_Personnage extends Zend_Db_Table_Abstract {
             exit;
         }
     }
-    public function getPallierLvl($lvl){
-         $select = $this->fetchRow($this->select()->setIntegrityCheck(false)->from("pallier_lvl")->where("lvl = ?", $lvl));
+
+    public function getPallierLvl($lvl) {
+        $select = $this->fetchRow($this->select()->setIntegrityCheck(false)->from("pallier_lvl")->where("lvl = ?", $lvl));
         return $select;
     }
-    public function setExperience(Personnage $perso, $exp){
+
+    public function setExperience(Personnage $perso, $exp) {
         $lvl = $perso->lvl();
         $pallier = $this->getPallierLvl($lvl);
         $experience_requise = $pallier->exp;
-       
+
         $model_classe = new Home_Model_DbTable_Classe();
-        
-        if($exp<$experience_requise){
+
+        if ($exp < $experience_requise) {
             $perso->setExp($exp);
-        }else{
-            if($exp ==$experience_requise){
+        } else {
+            if ($exp == $experience_requise) {
                 $perso->setExp(0);
-                $perso->setLvl($lvl +1);
+                $perso->setLvl($lvl + 1);
                 $model_classe->upStats($perso);
-            }else{
-                $exp = $exp-$experience_requise;
-                $perso->setLvl($lvl +1);
+            } else {
+                $exp = $exp - $experience_requise;
+                $perso->setLvl($lvl + 1);
                 $model_classe->upStats($perso);
                 $this->setExperience($perso, $exp);
             }
         }
     }
-    
-    public function drinkPotion(Personnage $perso, $potion){
+
+    public function drinkPotion(Personnage $perso, $potion) {
         $life = $perso->life();
-        $life_max = 100+8*$perso->vit();
-        if(($life_max-$life)<=$potion){
+        $life_max = 100 + 8 * $perso->vit();
+        if (($life_max - $life) <= $potion) {
             $perso->setLife($life_max);
-        }else{
-            $perso->setLife($life+$potion);
+        } else {
+            $perso->setLife($life + $potion);
         }
         $this->updatePlayer($perso);
     }
@@ -81,22 +83,23 @@ class Home_Model_DbTable_Personnage extends Zend_Db_Table_Abstract {
     public function playerExists($id_player) {
         if (is_int($id_player)) { // On veut voir si tel personnage ayant pour id $info existe.
             return (bool) $this->fetchRow($this->select()->where('id = ?', $id_player));
-        }else{
-        // Sinon, c'est qu'on veut vérifier que le nom existe ou pas.
-        $select = $this->fetchRow($this->select()->from("player", array("count" => "COUNT(*)"))->where('nom = ?', $id_player));
-        return (bool) $select["count"];}
+        } else {
+            // Sinon, c'est qu'on veut vérifier que le nom existe ou pas.
+            $select = $this->fetchRow($this->select()->from("player", array("count" => "COUNT(*)"))->where('nom = ?', $id_player));
+            return (bool) $select["count"];
+        }
     }
 
     public function getPlayer($id_player) {
         if (is_int($id_player)) {
             $arrayPlayer = $this->fetchRow($this->select()->where('id = ?', $id_player))->toArray();
-
-            return new Personnage($arrayPlayer);
         } else {
             $arrayPlayer = $this->fetchRow($this->select()->where('nom = ?', $id_player))->toArray();
-
-            return new Personnage($arrayPlayer);
         }
+        $perso = new Personnage($arrayPlayer);
+        $Core = new Home_Model_DbTable_Core();
+        $perso->setDefense($Core->getArmorStat($perso));
+        return $perso;
     }
 
     public function getPlayerById($id) {

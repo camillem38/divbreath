@@ -24,12 +24,11 @@ class Home_PlayController extends Zend_Controller_Action {
     public function indexAction() {
         if ($this->perso_exist != 0) {
             $Personnage = new Home_Model_DbTable_Personnage();
-            $Core = new Home_Model_DbTable_Core();
+
             $perso = $Personnage->getPlayer($this->perso_exist);
-            $table = array("nom", "degat", "exp", "lvl", "locate", "life", "str", "int", "vit", "dex", "classe", "degat_magique", "gold");
+            $table = array("nom", "degat", "exp", "lvl", "locate", "life", "str", "int", "vit", "dex", "classe", "degat_magique", "gold", "defense");
             $table_stats = $perso->tableGet($table);
-            $armor = $Core->getArmorStat($perso);
-            $table_stats["armor"] = $armor;
+
             $this->view->table_stats = $table_stats;
         } else {
             $this->_helper->redirector('create', 'play', 'home', array());
@@ -87,6 +86,7 @@ class Home_PlayController extends Zend_Controller_Action {
         $Monstre = new Home_Model_DbTable_Monstre();
         $Inventory = new Home_Model_DbTable_Inventory();
         $ItemModel = new Home_Model_DbTable_Item();
+        $CoreModel = new Home_Model_DbTable_Core();
         $perso = $Personnage->getPlayer($this->perso_exist);
         $player_inventory = $Inventory->getInventory($perso->id());
 
@@ -98,28 +98,33 @@ class Home_PlayController extends Zend_Controller_Action {
             $monstre_fight = $Monstre->getMonster((int) $fight);
             if (isset($monstre_fight) && $monstre_fight != "") {
                 if ($monstre_fight->lvl() == $lvl) {
-                    $My_degat = $perso->degat();
+
                     $My_life = $perso->life();
-                    $Monster_degat = $monstre_fight->degat();
+
                     $Monster_life = $monstre_fight->life();
 
                     while ($Monster_life > 0 && $My_life > 0) {
+                        $My_degat = $CoreModel->degatVariable($perso->degat());
+                        $Monster_degat = $CoreModel->degatVariable($monstre_fight->degat(), $perso->defense());
+                       
                         $Monster_life-=$My_degat;
                         if ($Monster_life <= 0) {
                             $Monster_life = 0;
                             echo "<p>Vous infligez le coup fatal au " . $monstre_fight->name() . ".Vous avez tué le " . $monstre_fight->name() . "</p>";
                             echo "<p>Vous gagnez " . $monstre_fight->exp() . "points d'experience. Il vous reste " . $My_life . "points de vie.</p>";
                             $drop = $Monstre->getDrop($monstre_fight);
-                           
+
                             if (count($drop) > 0) {
 
                                 foreach ($drop as $item_drop) {
                                     echo "<p>Vous recevez " . $item_drop->name . "</p>";
                                     $item_created = $ItemModel->addItem($item_drop);
-                                    $item_created->setNom($item_drop->name);
-                                    $player_inventory->attach($item_created);
-                                    $Inventory->addItemInInventory($item_created, $perso->id());
                                     
+                                    
+                                    $Inventory->addItemInInventory($item_created, $perso->id());
+                                    $inventory_row = $Inventory->getInventoryRowByItem($item_created);
+                                    $item_created->setIswear($inventory_row->is_wear);
+                                    $player_inventory->attach($item_created);
                                 }
                             }
                             $perso->setLife($My_life);
@@ -136,7 +141,7 @@ class Home_PlayController extends Zend_Controller_Action {
                         if ($Monster_life > 0) {
                             $My_life -=$Monster_degat;
                             if ($My_life >= 0) {
-                                echo "<p>Le " . $monstre_fight->name() . " vous inflige " . $monstre_fight->degat() . "dégats. Il vous reste " . $My_life . "points de vie.</p>";
+                                echo "<p>Le " . $monstre_fight->name() . " vous inflige " . $Monster_degat . "dégats. Il vous reste " . $My_life . "points de vie.</p>";
                             } else {
                                 $My_life = 0;
                                 echo "<p>Le " . $monstre_fight->name() . " vous inflige le coup fatal, vous êtes mort.</p>";
@@ -215,6 +220,7 @@ class Home_PlayController extends Zend_Controller_Action {
     public function equipAction() {
         if ($this->perso_exist != 0) {
 
+            $Personnage = new Home_Model_DbTable_Personnage();
             $Inventory = new Home_Model_DbTable_Inventory();
             $ItemModel = new Home_Model_DbTable_Item();
             $ItemProto = new Home_Model_DbTable_ItemProto();
@@ -227,6 +233,13 @@ class Home_PlayController extends Zend_Controller_Action {
             $proto = $ItemProto->getItemProto($item->item_proto_id());
             if ($proto->is_wearable == 1 && $item->iswear() == 0) {
                 $inventory_row->is_wear = 1;
+                $perso = $Personnage->getPlayer($this->perso_exist);
+                if ($proto->type == "Armor") {
+                    $perso->setDefense($perso->defense() + $proto->value_att_1);
+                } else {
+                    $perso->setDegat($perso->degat() + $proto->value_att_1);
+                    $Personnage->updatePlayer($perso);
+                }
                 $Inventory->updateInventory($inventory_row);
                 $this->_helper->redirector('inventory', 'play', 'home', array());
             } else {
@@ -239,7 +252,7 @@ class Home_PlayController extends Zend_Controller_Action {
 
     public function unequipAction() {
         if ($this->perso_exist != 0) {
-
+            $Personnage = new Home_Model_DbTable_Personnage();
             $Inventory = new Home_Model_DbTable_Inventory();
             $ItemModel = new Home_Model_DbTable_Item();
             $ItemProto = new Home_Model_DbTable_ItemProto();
@@ -252,6 +265,13 @@ class Home_PlayController extends Zend_Controller_Action {
             $proto = $ItemProto->getItemProto($item->item_proto_id());
             if ($proto->is_wearable == 1 && $item->iswear() == 1) {
                 $inventory_row->is_wear = 0;
+                $perso = $Personnage->getPlayer($this->perso_exist);
+                if ($proto->type == "Armor") {
+                    $perso->setDefense($perso->defense() + $proto->value_att_1);
+                } else {
+                    $perso->setDegat($perso->degat() + $proto->value_att_1);
+                    $Personnage->updatePlayer($perso);
+                }
                 $Inventory->updateInventory($inventory_row);
                 $this->_helper->redirector('inventory', 'play', 'home', array());
             } else {
@@ -260,6 +280,15 @@ class Home_PlayController extends Zend_Controller_Action {
         } else {
             $this->_helper->redirector('create', 'play', 'home', array());
         }
+    }
+
+    public function testAction() {
+        $CoreModel = new Home_Model_DbTable_Core();
+        $Personnage = new Home_Model_DbTable_Personnage();
+        $perso = $Personnage->getPlayer($this->perso_exist);
+        $My_degat = $perso->degat();
+        $test = $CoreModel->degatVariable($My_degat);
+        var_dump($test);
     }
 
 }

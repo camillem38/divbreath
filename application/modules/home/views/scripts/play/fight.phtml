@@ -11,10 +11,11 @@ foreach($this->monstre_liste as $monstre){
 <hr/>
 <h3>Consommable</h3>
 <?php foreach ($this->items as $item){?>
+<?php if($item->iswearable()==0){?>
 <p><?php echo($item->nom()); ?> (<?php echo $item->stack(); ?>) - (<a href="<?php echo $this->url(array('module' => 'home',
     'controller' => 'play',
     'action' => 'itemuse', 'id'=>$item->item_id()), 'default', true); ?>">Utiliser</a>)</p>
-<?php }?>
+<?php }}?>
 <br/>
 <p>Information relative au personnage:</p>
 <?php
@@ -24,6 +25,7 @@ echo "<p>Lvl:".$this->player_info->lvl()."</p>";
 echo "<p>Vie:".$this->player_info->life()."/".($this->player_info->vit()*8+100)."</p>";
 echo "<p>Dégat:".$this->player_info->degat()."</p>";
 echo "<p>Experience:".$this->player_info->exp()."/".$this->experience_requise->exp."</p>";
+echo "<p>Defense:".$this->player_info->defense()."</p>";
 ?>
 <p><a href="<?php
        echo $this->url(array('module' => 'home',
