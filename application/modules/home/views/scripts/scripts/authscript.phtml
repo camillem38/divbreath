@@ -1,0 +1,30 @@
+<?php
+/*
+ * Suppression des décorateurs positionnés par défaut
+ */
+foreach ($this->element->getElements() as $element) {
+    $decorator = $element->getDecorator('label');
+    if ($decorator) {
+        $decorator->setTag(null);
+    }
+}
+?>
+<form action="<?php echo $this->escape($this->element->getAction()); ?>"
+      method="<?php echo $this->escape($this->element->getMethod()); ?>"
+      name="<?php echo $this->escape($this->element->getAttrib('name')); ?>"
+      class="form_auth">
+
+    <h1>Identification</h1>
+    <table><tbody>
+            <tr>
+                <td> <?php echo $this->element->name->renderLabel(); ?></td>
+                <td> <?php echo $this->element->name->renderViewHelper(); ?></td>
+            </tr>  
+            <tr>
+                <td><?php echo $this->element->pw->renderLabel(); ?></td>
+                <td><?php echo $this->element->pw->renderViewHelper(); ?></td>
+            </tr> 
+        
+        </tbody></table> 
+            <?php echo $this->element->valider->renderViewHelper(); ?> 
+</form>

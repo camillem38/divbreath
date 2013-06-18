@@ -1,0 +1,38 @@
+<h2>Système de combat</h2>
+
+<p>Liste des monstres que vous pouvez combattre</p>
+<?php 
+foreach($this->monstre_liste as $monstre){
+    echo '<p><a href="'.$this->url(array('module' => 'home',
+    'controller' => 'play',
+    'action' => 'fight', 'id'=>$monstre->id_monstre), 'default', true).'">'.$monstre->name.'</a> [vie:'.$monstre->life.']</p>';
+}
+?>
+<hr/>
+<h3>Consommable</h3>
+<?php foreach ($this->items as $item){?>
+<p><?php echo($item->nom()); ?> (<?php echo $item->stack(); ?>) - (<a href="<?php echo $this->url(array('module' => 'home',
+    'controller' => 'play',
+    'action' => 'itemuse', 'id'=>$item->item_id()), 'default', true); ?>">Utiliser</a>)</p>
+<?php }?>
+<br/>
+<p>Information relative au personnage:</p>
+<?php
+echo "<p>Nom:".$this->player_info->nom()."</p>";
+echo "<p>Classe:".$this->player_info->classe()."</p>";
+echo "<p>Lvl:".$this->player_info->lvl()."</p>";
+echo "<p>Vie:".$this->player_info->life()."/".($this->player_info->vit()*8+100)."</p>";
+echo "<p>Dégat:".$this->player_info->degat()."</p>";
+echo "<p>Experience:".$this->player_info->exp()."/".$this->experience_requise->exp."</p>";
+?>
+<p><a href="<?php
+       echo $this->url(array('module' => 'home',
+           'controller' => 'play',
+           'action' => 'inventory'), 'default', true);
+?>">Ouvrir l'inventaire</a></p>
+<?php
+
+if($this->message!=""){
+    echo $this->message;
+}
+?>

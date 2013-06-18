@@ -1,0 +1,30 @@
+<?php
+/*
+ * Suppression des décorateurs positionnés par défaut
+ */
+foreach ($this->element->getElements() as $element) {
+    $decorator = $element->getDecorator('label');
+    if ($decorator) {
+        $decorator->setTag(null);
+    }
+}
+?>
+<form action="<?php echo $this->escape($this->element->getAction()); ?>"
+      method="<?php echo $this->escape($this->element->getMethod()); ?>"
+      name="<?php echo $this->escape($this->element->getAttrib('name')); ?>"
+      class="form_auth">
+
+    <h1>Création de votre personnage</h1>
+
+    <p>Sélection du physique</p>
+    <p><?php echo $this->element->physique->renderViewHelper(); ?></p>
+    <p>Sélection de la race</p>
+    <p><?php echo $this->element->race->renderViewHelper(); ?></p>
+    <p>Sélection de la classe</p>
+    <p><?php echo $this->element->classe->renderViewHelper(); ?></p>
+    <p>Choisissez votre pseudo</p>
+    <p>
+    <?php echo $this->element->name->renderViewHelper(); ?></p>
+
+    <?php echo $this->element->valider->renderViewHelper(); ?> 
+</form>

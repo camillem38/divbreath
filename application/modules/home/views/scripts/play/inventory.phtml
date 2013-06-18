@@ -1,0 +1,32 @@
+<h2>Inventaire</h2>
+
+<p>Liste des objets contenus dans votre inventaire</p>
+<?php if (count($this->inventory) > 0) {
+    foreach ($this->inventory as $inventory) {
+
+        
+        echo "<p>".$inventory->nom()." x".$inventory->stack()." ";
+        if($inventory->iswearable()==1){
+            if($inventory->iswear()==0){
+                 echo "(<a href='".$this->url(array('module' => 'home',
+    'controller' => 'play',
+    'action' => 'equip', 'id'=>$inventory->item_id()), 'default', true)."'>Equiper</a>)";
+            }else{
+                echo "(<a href='".$this->url(array('module' => 'home',
+    'controller' => 'play',
+    'action' => 'unequip', 'id'=>$inventory->item_id()), 'default', true)."'>Deséquiper</a>)";
+            }
+        
+        }else{
+            if($inventory->type()=="Consumable"){
+                 echo "(<a href='".$this->url(array('module' => 'home',
+    'controller' => 'play',
+    'action' => 'itemuse', 'id'=>$inventory->item_id()), 'default', true)."'>Utiliser</a>)";
+            }
+        }
+        echo "</p>";
+    }
+} else {
+    echo "Inventaire vide";
+}
+?>

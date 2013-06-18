@@ -1,0 +1,19 @@
+<?php $table_stats = $this->table_stats; ?>
+<h2>Profil de <?php echo $table_stats[0]; ?></h2>
+
+<?php
+for ($i = 0; $i < count($table_stats); $i++) {
+    echo "<p>" . $table_stats[$i] . "</p>";
+}
+?>
+<p>
+    <a href="<?php
+echo $this->url(array('module' => 'home',
+    'controller' => 'play',
+    'action' => 'fight'), 'default', true);
+?>">Combattre un monstre</a></p>
+<p><a href="<?php
+       echo $this->url(array('module' => 'home',
+           'controller' => 'play',
+           'action' => 'inventory'), 'default', true);
+?>">Ouvrir l'inventaire</a></p>

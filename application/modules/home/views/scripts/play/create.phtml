@@ -1,0 +1,9 @@
+<h2>Formulaire de création du personnage</h2>
+
+<p>Veuillez remplir ce formulaire, afin de créer votre personnage</p>
+<?php
+$this->form->setAction($this->url());
+echo $this->form;
+if($this->errorMessage!=""){
+    echo $this->errorMessage;
+}

@@ -1,0 +1,12 @@
+<h2>Formulaire d'identification</h2>
+
+<p>Veuillez remplir ce formulaire, afin de vous indentifier</p>
+<?php
+$this->form->setAction($this->url());
+echo $this->form;
+if($this->errorMessage!=""){
+    echo $this->errorMessage;
+}
+echo '<a href="'.$this->url(array('module' => 'home',
+    'controller' => 'auth',
+    'action' => 'register'), 'default', true).'">Créer un compte</a>';

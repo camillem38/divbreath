@@ -1,0 +1,11 @@
+<h2>Création de compte</h2>
+
+<p>Veuillez remplir ce formulaire, afin de créer votre compte</p>
+<?php
+$this->form->setAction($this->url());
+echo $this->form;
+if($this->errorMessage!=""){
+    echo $this->errorMessage;
+}echo '<a href="'.$this->url(array('module' => 'home',
+    'controller' => 'auth',
+    'action' => 'index'), 'default', true).'">S\'identifier</a>';
