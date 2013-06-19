@@ -26,6 +26,7 @@ echo "<p>Vie:".$this->player_info->life()."/".($this->player_info->vit()*8+100).
 echo "<p>Dégat:".$this->player_info->degat()."</p>";
 echo "<p>Experience:".$this->player_info->exp()."/".$this->experience_requise->exp."</p>";
 echo "<p>Defense:".$this->player_info->defense()."</p>";
+echo "<p>Gold:".$this->player_info->gold()."</p>";
 ?>
 <p><a href="<?php
        echo $this->url(array('module' => 'home',

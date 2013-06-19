@@ -48,6 +48,18 @@ class Home_Model_DbTable_Core {
 
         return $degat_result;
     }
+    
+    function goldVariable($gold, $variable = NULL) {
+
+        //30 //24
+        $variable = 50;
+
+        $gold_average = ceil($gold * (rand(-$variable, $variable) / 100)) + $gold;
+
+        
+
+        return $gold_average;
+    }
 
 }
 

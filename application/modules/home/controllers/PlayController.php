@@ -128,7 +128,9 @@ class Home_PlayController extends Zend_Controller_Action {
                                 }
                             }
                             $perso->setLife($My_life);
-                            $perso->setGold($monstre_fight->gold());
+                            $gold = $CoreModel->goldVariable($monstre_fight->gold());
+                            $perso->setGold($perso->gold() + $gold);
+                            echo "<p>Vous recevez " . $gold . " golds.</p>";
                             $exp = $perso->exp() + $monstre_fight->exp();
                             $Personnage->setExperience($perso, $exp);
                             $Personnage->updatePlayer($perso);
